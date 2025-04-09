@@ -42,7 +42,7 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnWave());
     }
 
-
+    //TODO have the spawnwave function below read from the JSON file for time delay?
     IEnumerator SpawnWave()
     {
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
@@ -60,7 +60,7 @@ public class EnemySpawner : MonoBehaviour
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
     }
-
+    //TODO modify both functions below to read from the JSON file
     IEnumerator SpawnZombie()
     {
         SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
@@ -69,6 +69,22 @@ public class EnemySpawner : MonoBehaviour
         Vector3 initial_position = spawn_point.transform.position + new Vector3(offset.x, offset.y, 0);
         GameObject new_enemy = Instantiate(enemy, initial_position, Quaternion.identity);
 
+        new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(0);
+        EnemyController en = new_enemy.GetComponent<EnemyController>();
+        en.hp = new Hittable(50, Hittable.Team.MONSTERS, new_enemy);
+        en.speed = 10;
+        GameManager.Instance.AddEnemy(new_enemy);
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    IEnumerator SpawnSkeleton() {
+        SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
+        Vector2 offset = Random.insideUnitCircle * 1.8f;
+
+        Vector3 initial_position = spawn_point.transform.position + new Vector3(offset.x, offset.y, 0);
+        GameObject new_enemy = Instantiate(enemy, initial_position, Quaternion.identity);
+
+        //TODO change the sprite to render the skeleton
         new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(0);
         EnemyController en = new_enemy.GetComponent<EnemyController>();
         en.hp = new Hittable(50, Hittable.Team.MONSTERS, new_enemy);
