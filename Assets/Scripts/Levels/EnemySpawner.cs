@@ -20,10 +20,20 @@ public class EnemySpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GameObject selector = Instantiate(button, level_selector.transform);
-        selector.transform.localPosition = new Vector3(0, 130);
-        selector.GetComponent<MenuSelectorController>().spawner = this;
-        selector.GetComponent<MenuSelectorController>().SetLevel("Start");
+        GameObject selector_eas = Instantiate(button, level_selector.transform);
+        selector_eas.transform.localPosition = new Vector3(0, 110);
+        selector_eas.GetComponent<MenuSelectorController>().spawner = this;
+        selector_eas.GetComponent<MenuSelectorController>().SetLevel("Easy");
+
+        GameObject selector_med = Instantiate(button, level_selector.transform);
+        selector_med.transform.localPosition = new Vector3(0, 60);
+        selector_med.GetComponent<MenuSelectorController>().spawner = this;
+        selector_med.GetComponent<MenuSelectorController>().SetLevel("Medium");
+
+        GameObject selector_har = Instantiate(button, level_selector.transform);
+        selector_har.transform.localPosition = new Vector3(0, 0);
+        selector_har.GetComponent<MenuSelectorController>().spawner = this;
+        selector_har.GetComponent<MenuSelectorController>().SetLevel("Hard");
         
         //setup enemy types
         enemy_list = new Dictionary<string, EnemyType>();
@@ -57,6 +67,7 @@ public class EnemySpawner : MonoBehaviour
     public void StartLevel(string levelname)
     {
         level_selector.gameObject.SetActive(false);
+        Debug.Log(levelname);
         // this is not nice: we should not have to be required to tell the player directly that the level is starting
         GameManager.Instance.player.GetComponent<PlayerController>().StartLevel();
         StartCoroutine(SpawnWave());

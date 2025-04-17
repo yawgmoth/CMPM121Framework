@@ -1897,7 +1897,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level_selector: {fileID: 1115058368}
   button: {fileID: 6791571272867747119, guid: 47865e4d0d1669541a3aa2992225a687, type: 3}
-  enemy: {fileID: 1832418719708313566, guid: bebfa21247182184d92ab200b93e6cf0, type: 3}
   SpawnPoints:
   - {fileID: 956873992}
   - {fileID: 1677496371}
@@ -1906,6 +1905,7 @@ MonoBehaviour:
   - {fileID: 2073311049}
   - {fileID: 1577913788}
   - {fileID: 587991943}
+  enemy: {fileID: 1832418719708313566, guid: bebfa21247182184d92ab200b93e6cf0, type: 3}
 --- !u!1 &532755679
 GameObject:
   m_ObjectHideFlags: 0
@@ -3659,7 +3659,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 4.899994, y: -6.100006}
   m_SizeDelta: {x: -400, y: -112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1115058368
