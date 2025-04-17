@@ -14,6 +14,7 @@ public class EnemySpawner : MonoBehaviour
     public SpawnPoint[] SpawnPoints; 
     public GameObject enemy;
     public Dictionary<string, EnemyType> enemy_list;
+    public Dictionary<string, LevelData> level_list;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,6 +31,17 @@ public class EnemySpawner : MonoBehaviour
         foreach(var e in jo) {
             EnemyType en = e.ToObject<EnemyType>();
             enemy_list[en.name] = en;
+        }
+
+
+        //setup level types
+        level_list = new Dictionary<string, LevelData>();
+        var leveltext = Resources.Load<TextAsset>("levels");
+
+        jo = JToken.Parse(leveltext.text);
+        foreach(var l in jo) {
+            LevelData lv = l.ToObject<LevelData>();
+            level_list[lv.name] = lv;
         }
 
     }
@@ -90,7 +102,9 @@ public class EnemySpawner : MonoBehaviour
 
     IEnumerator Spawn(string enemy_name)
     {
+        //pick enemey type
         EnemyType enemy_type = enemy_list[enemy_name];
+        //pick spawnpoint
         SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
         Vector2 offset = Random.insideUnitCircle * 1.8f;
                 
@@ -113,4 +127,24 @@ public class EnemyType {
     public int hp;
     public int speed;
     public int damage;
+}
+
+public class LevelData {
+    public string name;
+    public int waves;
+    public string[] spawns;
+    public SpawnData[] spawn_data;
+    //TODO: parse jsson object of spawns to turn into wavee spawning info
+    public bool process_spawn_data() {
+        return true;
+    }
+}
+
+public class SpawnData {
+    public string enemy;
+    public int count;
+    public string hp;
+    public int delay;
+    public int[] sequence;
+    public string location;
 }
