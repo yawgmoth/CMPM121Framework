@@ -11,9 +11,9 @@ public class EnemySpawner : MonoBehaviour
 {
     public Image level_selector;
     public GameObject button;
+    public SpawnPoint[] SpawnPoints; 
     public GameObject enemy;
-    public SpawnPoint[] SpawnPoints;    
-
+    public Dictionary<string, EnemyType> enemy_list;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,6 +21,17 @@ public class EnemySpawner : MonoBehaviour
         selector.transform.localPosition = new Vector3(0, 130);
         selector.GetComponent<MenuSelectorController>().spawner = this;
         selector.GetComponent<MenuSelectorController>().SetLevel("Start");
+        
+        //setup enemy types
+        enemy_list = new Dictionary<string, EnemyType>();
+        var enemytext = Resources.Load<TextAsset>("enemies");
+
+        JToken jo = JToken.Parse(enemytext.text);
+        foreach(var e in jo) {
+            EnemyType en = e.ToObject<EnemyType>();
+            enemy_list[en.name] = en;
+        }
+
     }
 
     // Update is called once per frame
@@ -55,7 +66,7 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.INWAVE;
         for (int i = 0; i < 10; ++i)
         {
-            yield return SpawnZombie();
+            yield return Spawn("skeleton");
         }
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
@@ -77,19 +88,35 @@ public class EnemySpawner : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
-    IEnumerator SpawnSkeleton() {
+    IEnumerator Spawn(string enemy_name)
+    {
+        EnemyType enemy_type = enemy_list[enemy_name];
         SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
         Vector2 offset = Random.insideUnitCircle * 1.8f;
-
+                
         Vector3 initial_position = spawn_point.transform.position + new Vector3(offset.x, offset.y, 0);
         GameObject new_enemy = Instantiate(enemy, initial_position, Quaternion.identity);
 
-        //TODO change the sprite to render the skeleton
         new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(0);
         EnemyController en = new_enemy.GetComponent<EnemyController>();
-        en.hp = new Hittable(50, Hittable.Team.MONSTERS, new_enemy);
-        en.speed = 10;
+        en.hp = new Hittable(enemy_type.hp, Hittable.Team.MONSTERS, new_enemy);
+        en.speed = enemy_type.speed;
         GameManager.Instance.AddEnemy(new_enemy);
         yield return new WaitForSeconds(0.5f);
+    }
+}
+
+public class EnemyType {
+    public string name;
+    public int sprite;
+    public int hp;
+    public int speed;
+    public int damage;
+
+    public EnemyType(string n, int s, int hp_val, int spd_val, int dmg) {
+        name = n;
+        sprite = s;
+        hp = hp_val;
+        damage = dmg;
     }
 }
