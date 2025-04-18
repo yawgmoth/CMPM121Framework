@@ -12,7 +12,9 @@ public class EnemySpawner : MonoBehaviour
     public Image level_selector;
     public GameObject button;
     public GameObject enemy;
-    public SpawnPoint[] SpawnPoints;    
+    public SpawnPoint[] SpawnPoints;
+
+    public Dictionary<string, Enemy> enemy_types;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,12 +23,23 @@ public class EnemySpawner : MonoBehaviour
         selector.transform.localPosition = new Vector3(0, 130);
         selector.GetComponent<MenuSelectorController>().spawner = this;
         selector.GetComponent<MenuSelectorController>().SetLevel("Start");
+
+        //Json Deserialization
+        enemy_types = new Dictionary<string, Enemy>();
+        var enemytext = Resources.Load<TextAsset>("enemies");
+        JToken jo = JToken.Parse(enemytext.text);
+        foreach (var enemy in jo)
+        {
+            Enemy en = enemy.ToObject<Enemy>();
+            enemy_types[en.name] = en;
+            Debug.Log("Added " + en.name + " to " + enemy_types);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void StartLevel(string levelname)
@@ -55,21 +68,24 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.INWAVE;
         for (int i = 0; i < 10; ++i)
         {
-            yield return SpawnZombie();
+            yield return SpawnEnemy(/*string enemy_name*/);
         }
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
     }
 
-    IEnumerator SpawnZombie()
+    IEnumerator SpawnEnemy(/*string enemy_name*/)
     {
+        string enemy_name = "skeleton";
+
+        Enemy enemy_stats = enemy_types[enemy_name];
         SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
         Vector2 offset = Random.insideUnitCircle * 1.8f;
-                
+
         Vector3 initial_position = spawn_point.transform.position + new Vector3(offset.x, offset.y, 0);
         GameObject new_enemy = Instantiate(enemy, initial_position, Quaternion.identity);
-
-        new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(0);
+        Debug.Log(enemy_types);
+        new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(enemy_stats.sprite);
         EnemyController en = new_enemy.GetComponent<EnemyController>();
         en.hp = new Hittable(50, Hittable.Team.MONSTERS, new_enemy);
         en.speed = 10;
