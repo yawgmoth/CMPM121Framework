@@ -15,6 +15,7 @@ public class EnemySpawner : MonoBehaviour
     public SpawnPoint[] SpawnPoints;
 
     public Dictionary<string, Enemy> enemy_types;
+    public Dictionary<string, Level> levels;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,7 +33,14 @@ public class EnemySpawner : MonoBehaviour
         {
             Enemy en = enemy.ToObject<Enemy>();
             enemy_types[en.name] = en;
-            Debug.Log("Added " + en.name + " to " + enemy_types);
+        }
+        levels = new Dictionary<string, Level>();
+        var leveltext = Resources.Load<TextAsset>("levels");
+        JToken jol = JToken.Parse(leveltext.text);
+        foreach (var level in jol)
+        {
+            Level lvl = level.ToObject<Level>();
+            levels[lvl.name] = lvl;
         }
     }
 
@@ -55,6 +63,12 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnWave());
     }
 
+    public int RPN_to_int(string rpn)
+    {
+
+        return 5;
+    }
+
 
     IEnumerator SpawnWave()
     {
@@ -66,17 +80,35 @@ public class EnemySpawner : MonoBehaviour
             GameManager.Instance.countdown--;
         }
         GameManager.Instance.state = GameManager.GameState.INWAVE;
-        for (int i = 0; i < 10; ++i)
+
+        string level_name = "Easy";
+        Level level = levels[level_name];
+        foreach (var wave in level.spawns)
         {
-            yield return SpawnEnemy(/*string enemy_name*/);
+            StartCoroutine(ManageWave(wave));
         }
+
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
     }
 
-    IEnumerator SpawnEnemy(/*string enemy_name*/)
+    IEnumerator ManageWave(Spawn spawn)
     {
-        string enemy_name = "skeleton";
+        int spawned = 0;
+        while (spawned < 10)
+        {
+            int num_to_spawn = 5;
+            for (int i = 0; i < num_to_spawn; i++)
+            {
+                yield return SpawnEnemy(spawn.enemy);
+                spawned++;
+            }
+            yield return new WaitForSeconds(spawn.delay);
+        }
+    }
+
+    IEnumerator SpawnEnemy(string enemy_name)
+    {
 
         Enemy enemy_stats = enemy_types[enemy_name];
         SpawnPoint spawn_point = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
@@ -84,7 +116,6 @@ public class EnemySpawner : MonoBehaviour
 
         Vector3 initial_position = spawn_point.transform.position + new Vector3(offset.x, offset.y, 0);
         GameObject new_enemy = Instantiate(enemy, initial_position, Quaternion.identity);
-        Debug.Log(enemy_types);
         new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(enemy_stats.sprite);
         EnemyController en = new_enemy.GetComponent<EnemyController>();
         en.hp = new Hittable(enemy_stats.hp, Hittable.Team.MONSTERS, new_enemy);
@@ -93,4 +124,6 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.AddEnemy(new_enemy);
         yield return new WaitForSeconds(0.5f);
     }
+
+
 }
