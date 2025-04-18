@@ -87,8 +87,9 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log(enemy_types);
         new_enemy.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.enemySpriteManager.Get(enemy_stats.sprite);
         EnemyController en = new_enemy.GetComponent<EnemyController>();
-        en.hp = new Hittable(50, Hittable.Team.MONSTERS, new_enemy);
-        en.speed = 10;
+        en.hp = new Hittable(enemy_stats.hp, Hittable.Team.MONSTERS, new_enemy);
+        en.speed = enemy_stats.speed;
+        en.damage = enemy_stats.damage;
         GameManager.Instance.AddEnemy(new_enemy);
         yield return new WaitForSeconds(0.5f);
     }
