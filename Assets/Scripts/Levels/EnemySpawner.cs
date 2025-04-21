@@ -132,7 +132,13 @@ public class EnemySpawner : MonoBehaviour
 
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         currentWave += 1;
-        GameManager.Instance.state = GameManager.GameState.WAVEEND;
+        if (currentWave > level.waves){
+            GameManager.Instance.state = GameManager.GameState.GAMEOVER;
+        }
+        else {
+            GameManager.Instance.state = GameManager.GameState.WAVEEND;
+        }
+        
         
     }
 
