@@ -13,6 +13,7 @@ public class EnemySpawner : MonoBehaviour
     public GameObject button;
     public GameObject enemy;
     public SpawnPoint[] SpawnPoints;
+    private int currentWave = 1;
 
     public Dictionary<string, Enemy> enemy_types;
     public Dictionary<string, Level> levels;
@@ -66,8 +67,49 @@ public class EnemySpawner : MonoBehaviour
     public int RPN_to_int(string rpn)
     {
 
-        return 5;
+        Stack<int> stack = new Stack<int>();
+        string[] tokens = rpn.Split(' ');
+
+        foreach (string token in tokens)
+        {
+            if (token == "wave")
+            {
+                stack.Push(currentWave);
+            }
+            else if (token == "+" || token == "-" || token == "*" || token == "/" || token == "%")
+            {
+                
+
+                int b = stack.Pop();
+                int a = stack.Pop();
+                if (token == "+"){
+                    stack.Push(a + b);
+                } else if (token == "-"){
+                    stack.Push(a - b);
+                } else if (token == "*"){
+                    stack.Push(a * b);
+                } else if (token == "/"){
+                    stack.Push(a / b);
+                } else if (token == "%"){
+                    stack.Push(a % b);
+                }
+            }
+            else
+            {
+                if (int.TryParse(token, out int value))
+                {
+                    stack.Push(value);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        return stack.Count > 0 ? stack.Pop() : 0;
     }
+
 
 
     IEnumerator SpawnWave()
@@ -89,21 +131,36 @@ public class EnemySpawner : MonoBehaviour
         }
 
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
+        currentWave += 1;
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
+        
     }
 
     IEnumerator ManageWave(Spawn spawn)
     {
+        // int spawned = 0;
+        // while (spawned < 10)
+        // {
+        //     int num_to_spawn = 5;
+        //     for (int i = 0; i < num_to_spawn; i++)
+        //     {
+        //         yield return SpawnEnemy(spawn.enemy);
+        //         spawned++;
+        //     }
+        //     yield return new WaitForSeconds(spawn.delay);
+        // }
+
+        int total_to_spawn = RPN_to_int(spawn.count); // e.g., "5 wave +" should become int
         int spawned = 0;
-        while (spawned < 10)
+        Debug.Log(total_to_spawn);
+
+        float delay = spawn.delay > 0 ? spawn.delay : 1f;
+
+        while (spawned < total_to_spawn)
         {
-            int num_to_spawn = 5;
-            for (int i = 0; i < num_to_spawn; i++)
-            {
-                yield return SpawnEnemy(spawn.enemy);
-                spawned++;
-            }
-            yield return new WaitForSeconds(spawn.delay);
+            yield return SpawnEnemy(spawn.enemy);
+            spawned++;
+            yield return new WaitForSeconds(delay);
         }
     }
 
