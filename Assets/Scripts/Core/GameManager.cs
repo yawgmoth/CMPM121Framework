@@ -43,6 +43,9 @@ public class GameManager
     public void ParseEnemyJSON(){
         enemy_types = new Dictionary<string, Enemy>();
         var enemytext = Resources.Load<TextAsset>("enemies");
+
+        // var convert = JsonConvert.DeserializeObject<List<Enemy>>(enemytext.text);
+        
         JToken jo = JToken.Parse(enemytext.text);
         foreach (var enemy in jo)
         {
