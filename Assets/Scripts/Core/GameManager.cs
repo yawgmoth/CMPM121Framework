@@ -35,6 +35,11 @@ public class GameManager
     public PlayerSpriteManager playerSpriteManager;
     public RelicIconManager relicIconManager;
 
+    public float timeStart = 0;
+    public float timeEnd = 0;
+    public float timeSpent = 0;
+    public int damageDealt = 0;
+    public int damageReceived = 0;
     public Dictionary<string, Enemy> enemy_types;
     public Dictionary<string, Level> level_types;
     private List<GameObject> enemies;

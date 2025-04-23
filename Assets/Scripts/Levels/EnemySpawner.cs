@@ -123,6 +123,7 @@ public class EnemySpawner : MonoBehaviour
     IEnumerator SpawnWave()
     {
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
+        
         GameManager.Instance.countdown = 3;
         for (int i = 3; i > 0; i--)
         {
@@ -130,7 +131,7 @@ public class EnemySpawner : MonoBehaviour
             GameManager.Instance.countdown--;
         }
         GameManager.Instance.state = GameManager.GameState.INWAVE;
-        
+        GameManager.Instance.timeStart = Time.time;
 
         var stage = GameManager.Instance.level_types[difficulty_level];
 
@@ -142,21 +143,24 @@ public class EnemySpawner : MonoBehaviour
             int seq = 0;
 
             for(int i = 0; i < count; i++){
-                Debug.Log(spawn.enemy + " spawn amount:" + spawn.sequence[seq % spawn.sequence.Length]);
-                for(int j = 0; j < spawn.sequence[seq % spawn.sequence.Length]-1; j++){
-                    yield return SpawnEnemy(spawn, false);
-                    i++;
-                    if(i >= count){
-                        break;
+                if(spawn.sequence != null){
+                    Debug.Log(spawn.enemy + " spawn amount:" + spawn.sequence[seq % spawn.sequence.Length]);
+                    for(int j = 0; j < spawn.sequence[seq % spawn.sequence.Length]-1; j++){
+                        yield return SpawnEnemy(spawn, false);
+                        i++;
+                        if(i >= count){
+                            break;
+                        }
                     }
+                    seq++;
                 }
-                seq++;
                 yield return SpawnEnemy(spawn);
             }
         }
 
         yield return new WaitWhile(() => GameManager.Instance.enemy_count > 0);
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
+        GameManager.Instance.timeEnd = Time.time;
     }
 
     IEnumerator SpawnEnemy(Spawn spawn, bool delay = true)
