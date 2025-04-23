@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -136,8 +137,20 @@ public class EnemySpawner : MonoBehaviour
         foreach(var spawn in stage.spawns){
             
             var count = evaluateRPN(spawn.count.Replace("wave", wave.ToString()));
-            Debug.Log("Spawning: " + count);
+            Debug.Log("Wave total " + spawn.enemy + " spawn: " + count);
+
+            int seq = 0;
+
             for(int i = 0; i < count; i++){
+                Debug.Log(spawn.enemy + " spawn amount:" + spawn.sequence[seq % spawn.sequence.Length]);
+                for(int j = 0; j < spawn.sequence[seq % spawn.sequence.Length]-1; j++){
+                    yield return SpawnEnemy(spawn, false);
+                    i++;
+                    if(i >= count){
+                        break;
+                    }
+                }
+                seq++;
                 yield return SpawnEnemy(spawn);
             }
         }
@@ -146,9 +159,8 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.WAVEEND;
     }
 
-    IEnumerator SpawnEnemy(Spawn spawn)
+    IEnumerator SpawnEnemy(Spawn spawn, bool delay = true)
     {
-        int delay;
         // int delay = int.TryParse(spawn.delay, delay);
         int hp = evaluateRPN(spawn.hp.Replace("wave", wave.ToString()).Replace("base", GameManager.Instance.enemy_types[spawn.enemy].hp.ToString()));
 
@@ -172,15 +184,22 @@ public class EnemySpawner : MonoBehaviour
         EnemyController en = new_enemy.GetComponent<EnemyController>();
 
         en.hp = new Hittable(hp, Hittable.Team.MONSTERS, new_enemy);
-        en.speed = 10;
-        
+
+        en.speed = GameManager.Instance.enemy_types[spawn.enemy].speed;
+        en.damage = GameManager.Instance.enemy_types[spawn.enemy].damage;
+
         GameManager.Instance.AddEnemy(new_enemy);
         
-        if(int.TryParse(spawn.delay, out delay)){   
-            yield return new WaitForSeconds(delay);
-        }
-        else {
-            yield return new WaitForSeconds(2);
+
+        if(delay){
+            if(spawn.delay != null){   
+                yield return new WaitForSeconds(int.Parse(spawn.delay));
+            }
+            else {
+                yield return new WaitForSeconds(2);
+            }
+        } else {
+            yield return new WaitForSeconds(0);
         }
 
 
