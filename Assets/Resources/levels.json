@@ -21,7 +21,7 @@
             {
                 "enemy": "warlock",
                 "count": "wave 5 / 1 wave 5 % - *",
-                "hp": "100 25 wave *",
+                "hp": "100 25 wave * +",
                 "location": "random bone"
             }       
         ]
@@ -48,7 +48,7 @@
             {
                 "enemy": "warlock",
                 "count": "wave 5 / 1 wave 5 % - *",
-                "hp": "75 50 wave *",
+                "hp": "75 50 wave * +",
                 "damage": "base 10 +",
                 "location": "random bone"
             }       
@@ -75,7 +75,7 @@
             {
                 "enemy": "warlock",
                 "count": "wave 10 / 1 wave 10 % - *",
-                "hp": "75 15 wave *",
+                "hp": "75 15 wave * +",
                 "damage": "base 5 -",
                 "location": "random bone"
             }       
