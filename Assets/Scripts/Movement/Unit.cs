@@ -7,6 +7,7 @@ public class Unit : MonoBehaviour
     
     public Vector2 movement;
     public float distance;
+    public float speed = 5f;
     public event Action<float> OnMove;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

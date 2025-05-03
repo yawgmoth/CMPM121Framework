@@ -125,6 +125,12 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
         
         GameManager.Instance.countdown = 3;
+
+        //scaling player stats
+        PlayerController player = GameManager.Instance.player.GetComponent<PlayerController>();
+        UpdatePlayerStats(wave, player);
+
+
         for (int i = 3; i > 0; i--)
         {
             yield return new WaitForSeconds(1);
@@ -208,4 +214,32 @@ public class EnemySpawner : MonoBehaviour
 
 
     }
+
+    public void UpdatePlayerStats(int wave, PlayerController player)
+    {
+        var variables = new Dictionary<string, float>
+    {
+        { "wave", wave }
+    };
+
+        float newHP = RPNEvaluator.Evaluate("95 wave 5 * +", variables);
+        float newMana = RPNEvaluator.Evaluate("90 wave 10 * +", variables);
+        float newRegen = RPNEvaluator.Evaluate("10 wave +", variables);
+        float newSpellPower = RPNEvaluator.Evaluate("wave 10 *", variables);
+        float newSpeed = RPNEvaluator.Evaluate("5", variables);
+
+        player.SetMaxHP((int)newHP); // Preserves HP %
+        player.SetMaxMana((int)newMana);
+        player.SetManaRegen(newRegen);
+        player.SetSpellPower((int)newSpellPower);
+        player.SetMoveSpeed(newSpeed);
+
+        Debug.Log($"[Wave {wave}] Stats updated:");
+        Debug.Log($"  HP: {(int)newHP}");
+        Debug.Log($"  Max Mana: {(int)newMana}");
+        Debug.Log($"  Mana Regen: {(int)newRegen}");
+        Debug.Log($"  Spell Power: {(int)newSpellPower}");
+        Debug.Log($"  Move Speed: {newSpeed}");
+    }
 }
+

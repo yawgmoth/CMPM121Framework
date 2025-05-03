@@ -4,9 +4,10 @@ using System.Collections.Generic;
 
 public class SpellCaster 
 {
-    public int mana;
+    public float mana;
     public int max_mana;
-    public int mana_reg;
+    public float mana_reg;
+    public int spell_power;
     public Hittable.Team team;
     public Spell spell;
 

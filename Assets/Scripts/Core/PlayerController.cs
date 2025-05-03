@@ -66,4 +66,45 @@ public class PlayerController : MonoBehaviour
         Debug.Log("You Lost");
     }
 
+    public void SetMaxHP(int newHP)
+    {
+        if (hp != null)
+        {
+            hp.SetMaxHP(newHP);
+        }
+    }
+
+    public void SetMaxMana(int newMana)
+    {
+        if (spellcaster != null)
+        {
+            spellcaster.max_mana = newMana;
+            spellcaster.mana = Mathf.Min(spellcaster.mana, spellcaster.max_mana);
+        }
+    }
+
+    public void SetManaRegen(float regen)
+    {
+        if (spellcaster != null)
+        {
+            spellcaster.mana_reg = regen;
+        }
+    }
+
+    public void SetSpellPower(int newPower)
+    {
+        if (spellcaster != null)
+        {
+            spellcaster.spell_power = newPower;
+        }
+    }
+
+    public void SetMoveSpeed(float speedValue)
+    {
+        if (unit != null)
+        {
+            unit.speed = speedValue;
+        }
+    }
+
 }

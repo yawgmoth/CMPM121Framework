@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 public static class RPNEvaluator
 {
-    public static int Evaluate(string expression, Dictionary<string, int> variables)
+    public static float Evaluate(string expression, Dictionary<string, float> variables)
     {
         if (string.IsNullOrWhiteSpace(expression)) return 0;
 
-        Stack<int> stack = new Stack<int>();
+        Stack<float> stack = new Stack<float>();
         string[] tokens = expression.Split(' ');
 
         foreach (var token in tokens)
         {
-            if (int.TryParse(token, out int number))
+            if (float.TryParse(token, out float number))
             {
                 stack.Push(number);
             }
@@ -27,8 +27,8 @@ public static class RPNEvaluator
                     throw new InvalidOperationException($"Invalid RPN expression: not enough values for '{token}'");
                 }
 
-                int b = stack.Pop();
-                int a = stack.Pop();
+                float b = stack.Pop();
+                float a = stack.Pop();
 
                 switch (token)
                 {
