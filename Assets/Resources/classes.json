@@ -18,8 +18,8 @@
     "battlemage": {
             "sprite": 2,
             "health": "90 wave 15 * +",
+			"mana": "120",
             "mana_regeneration": "15",
-            "mana": "120",
             "spellpower": "wave 5 *",
             "speed": "5 wave 2 / +"
     }
